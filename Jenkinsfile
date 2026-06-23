@@ -22,14 +22,14 @@ pipeline {
 
         stage('Set Up Python Virtual Environment') {
             steps {
-                bat 'python -m venv %VENV_DIR%'
+                sh 'python3 -m venv $VENV_DIR'
             }
         }
 
         stage('Install Dependencies') {
             steps {
-                bat '''
-                call %VENV_DIR%\\Scripts\\activate
+                sh '''
+                . $VENV_DIR/bin/activate
                 python -m pip install --upgrade pip
                 pip install -r requirements.txt
                 '''
@@ -39,8 +39,8 @@ pipeline {
         stage('Run Pytest API Tests and Generate HTML Report') {
             steps {
                 catchError(buildResult: 'FAILURE', stageResult: 'FAILURE') {
-                    bat '''
-                    call %VENV_DIR%\\Scripts\\activate
+                    sh '''
+                    . $VENV_DIR/bin/activate
                     pytest --html=reports/api_test_report.html --self-contained-html
                     '''
                 }
