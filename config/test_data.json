@@ -1,0 +1,29 @@
+{
+  "valid_poll": {
+    "question": "Which DevOps tool do you use most?",
+    "options": [
+      "Jenkins",
+      "Docker",
+      "Kubernetes",
+      "GitHub Actions"
+    ]
+  },
+  "valid_vote": {
+    "optionIndex": 0
+  },
+  "empty_payload": {},
+  "invalid_poll_empty_question": {
+    "question": "",
+    "options": [
+      "Jenkins",
+      "Docker"
+    ]
+  },
+  "invalid_poll_missing_options": {
+    "question": "Which API testing tool do you prefer?"
+  },
+  "invalid_vote": {
+    "optionIndex": 9999
+  },
+  "invalid_poll_id": 999999
+}
