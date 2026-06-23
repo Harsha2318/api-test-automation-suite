@@ -2,6 +2,9 @@
 
 A Python-based REST API automation suite for testing a Spring Boot Polling Application backend.
 
+<img width="1920" height="1020" alt="image" src="https://github.com/user-attachments/assets/d7003450-b079-4352-8a9f-18e89d19948e" />
+
+
 <img width="1620" height="533" alt="image" src="https://github.com/user-attachments/assets/41d542b6-4636-4732-9a80-c730ce123799" />
 
 
