@@ -1,21 +1,19 @@
 # API Test Automation Suite
 
-Python-based REST API test automation project for validating a Spring Boot Polling Application backend.
+A Python-based REST API automation suite for testing a Spring Boot Polling Application backend.
 
-This project is designed to be simple, practical, and resume-friendly for QA automation, DevOps, backend testing, and graduate trainee roles.
+The project uses `pytest` and the `requests` library to validate API health, poll creation, poll retrieval, voting, and negative request scenarios. It also generates an HTML report and includes a Jenkins pipeline for CI execution.
 
-## Project Overview
-
-The suite validates common REST API workflows using Pytest and the Requests library. It supports environment-based execution through `BASE_URL`, generates HTML reports using `pytest-html`, and includes a Jenkins pipeline for CI/CD validation.
-
-Target API endpoints:
+## Features
 
 ```text
-GET  /actuator/health
-GET  /api/polls
-POST /api/polls
-GET  /api/polls/{id}
-POST /api/polls/{id}/vote
+Environment-based API testing using BASE_URL
+Reusable API client wrapper
+Positive and negative REST API test cases
+JSON-based test data
+HTML test report generation
+Jenkins pipeline support
+Readable failure logs with endpoint, status code, and response body
 ```
 
 ## Tech Stack
@@ -27,7 +25,24 @@ Requests
 pytest-html
 python-dotenv
 Jenkins
-Spring Boot REST API
+```
+
+## Target API
+
+The test suite is designed for a Spring Boot Polling Application with endpoints similar to:
+
+```text
+GET  /actuator/health
+GET  /api/polls
+POST /api/polls
+GET  /api/polls/{id}
+POST /api/polls/{id}/vote
+```
+
+Default backend URL:
+
+```text
+http://localhost:8080
 ```
 
 ## Folder Structure
@@ -35,61 +50,80 @@ Spring Boot REST API
 ```text
 api-test-automation-suite/
 |
-|-- tests/
-|   |-- test_health.py
-|   |-- test_polls_api.py
-|   `-- test_negative_cases.py
-|
-|-- utils/
-|   `-- api_client.py
-|
 |-- config/
 |   `-- test_data.json
 |
 |-- reports/
+|   `-- .gitkeep
 |
+|-- tests/
+|   |-- test_health.py
+|   |-- test_negative_cases.py
+|   `-- test_polls_api.py
+|
+|-- utils/
+|   `-- api_client.py
+|
+|-- .gitignore
 |-- conftest.py
-|-- requirements.txt
-|-- pytest.ini
 |-- Jenkinsfile
-`-- README.md
+|-- pytest.ini
+|-- README.md
+`-- requirements.txt
 ```
 
-## Test Scenarios
+## Test Coverage
 
-Positive scenarios:
+Positive test cases:
 
 ```text
 Backend health check
 Get all polls
 Create a poll
-Get poll by valid ID after creating a poll
+Get poll by ID after creating a poll
 Vote for a poll after creating a poll
 ```
 
-Negative scenarios:
+Negative test cases:
 
 ```text
 Get poll using invalid poll ID
 Create poll with empty payload
 Create poll with empty question
 Create poll with missing options
-Vote using invalid poll ID or invalid vote payload
+Vote using invalid poll ID
 ```
 
-## How To Run Locally
+## Prerequisites
 
-Start your Spring Boot Polling Application first. By default, the test suite expects the backend to run at:
+Install Python 3.10 or higher.
 
-```text
-http://localhost:8080
+Make sure the Spring Boot backend is running before executing the tests.
+
+Check Python version:
+
+```bash
+python --version
 ```
 
-Create and activate a Python virtual environment:
+## Setup
+
+Create a virtual environment:
 
 ```bash
 python -m venv .venv
+```
+
+Activate the virtual environment on Windows:
+
+```bash
 .venv\Scripts\activate
+```
+
+Activate the virtual environment on Linux/macOS:
+
+```bash
+source .venv/bin/activate
 ```
 
 Install dependencies:
@@ -98,69 +132,118 @@ Install dependencies:
 pip install -r requirements.txt
 ```
 
-Run all tests:
+## Running Tests
+
+Run all tests using the default API URL:
 
 ```bash
 pytest
 ```
 
-## Run With Custom API URL
-
-Use `BASE_URL` to run the same tests against local, dev, staging, Docker, Kubernetes, or Jenkins environments.
-
-PowerShell:
+Run tests with a custom API URL on Windows PowerShell:
 
 ```powershell
 $env:BASE_URL="http://localhost:8080"
 pytest
 ```
 
-Command Prompt:
+Run tests with a custom API URL on Command Prompt:
 
 ```bat
 set BASE_URL=http://localhost:8080
 pytest
 ```
 
-Linux/macOS:
+Run tests with a custom API URL on Linux/macOS:
 
 ```bash
 BASE_URL=http://localhost:8080 pytest
 ```
 
-## HTML Test Report
+## Running Specific Tests
 
-The HTML report is generated automatically from `pytest.ini`:
+Run health check tests:
+
+```bash
+pytest tests/test_health.py
+```
+
+Run poll API tests:
+
+```bash
+pytest tests/test_polls_api.py
+```
+
+Run negative test cases:
+
+```bash
+pytest tests/test_negative_cases.py
+```
+
+Run tests with verbose output:
+
+```bash
+pytest -v
+```
+
+## HTML Report
+
+The project uses `pytest-html` to generate a report automatically.
+
+Report location:
 
 ```text
 reports/api_test_report.html
 ```
 
-You can also run the report command manually:
+Manual report command:
 
 ```bash
 pytest --html=reports/api_test_report.html --self-contained-html
 ```
 
-Open the generated report in a browser to view passed, failed, and skipped test details.
+Open the generated HTML file in a browser to view test results.
+
+## Configuration
+
+The base API URL is read from the `BASE_URL` environment variable.
+
+If `BASE_URL` is not provided, the test suite uses:
+
+```text
+http://localhost:8080
+```
+
+Test data is stored in:
+
+```text
+config/test_data.json
+```
+
+Pytest settings are stored in:
+
+```text
+pytest.ini
+```
 
 ## Jenkins Pipeline
 
-The included `Jenkinsfile` performs:
+The included `Jenkinsfile` runs the API tests in a CI pipeline.
+
+Pipeline stages:
 
 ```text
-Checkout code
-Set up Python virtual environment
-Install Python dependencies
-Run Pytest API tests
-Generate HTML report
-Publish HTML report
+Checkout Code
+Set Up Python Virtual Environment
+Install Dependencies
+Run Pytest API Tests and Generate HTML Report
+Publish HTML Report
 ```
 
-In Jenkins, configure `BASE_URL` as an environment variable if your backend runs on a different host:
+The Jenkins pipeline accepts a `BASE_URL` parameter. Set it to the backend URL you want to test:
 
 ```text
-BASE_URL=http://your-backend-host:8080
+http://localhost:8080
 ```
 
 Required Jenkins plugin:
@@ -169,41 +252,15 @@ Required Jenkins plugin:
 HTML Publisher Plugin
 ```
 
-After the build completes, Jenkins publishes:
+After execution, Jenkins publishes the HTML report as:
 
 ```text
 API Test Automation Report
 ```
 
-## Useful Commands
+## Debugging
 
-Run tests with verbose output:
-
-```bash
-pytest -v
-```
-
-Run only health tests:
-
-```bash
-pytest tests/test_health.py
-```
-
-Run only negative tests:
-
-```bash
-pytest tests/test_negative_cases.py
-```
-
-Run tests against another environment:
-
-```bash
-BASE_URL=http://staging-api.example.com pytest
-```
-
-## Debugging Failed Tests
-
-Each test prints useful response details:
+When a test fails, the test output includes:
 
 ```text
 Endpoint
@@ -211,30 +268,24 @@ Status code
 Response body
 ```
 
-This helps debug backend validation failures in local runs and Jenkins reports.
+This makes it easier to identify backend response issues, invalid payloads, or environment configuration problems.
 
-## Resume Points
+## Notes
 
-```latex
-\resumeProjectHeading
-{API Test Automation Suite $|$ Python, Pytest, REST APIs, Jenkins}
-{https://github.com/Harsha2318/api-test-automation-suite}
-\resumeItemListStart
-\resumeItem{Built a Python-based API automation suite to validate Spring Boot REST endpoints, request payloads, status codes, and JSON responses.}
-\resumeItem{Used Pytest fixtures, reusable API client utilities, and assertions to organize maintainable positive and negative test cases.}
-\resumeItem{Implemented automated tests for health checks, poll creation, poll retrieval, invalid requests, and API error handling scenarios.}
-\resumeItem{Generated HTML test reports and debugged failed cases using response logs, error messages, and API outputs.}
-\resumeItem{Integrated API test execution with Jenkins to support backend validation during CI/CD workflows.}
-\resumeItemListEnd
-```
+The tests assume that the backend API follows the expected endpoint structure and returns JSON responses.
 
-## Future Improvements
+If your backend uses different field names for poll IDs or vote options, update the helper functions in:
 
 ```text
-Add Allure reports
-Run tests inside Docker
-Add GitHub Actions workflow
+tests/test_polls_api.py
+```
+
+## Future Enhancements
+
+```text
 Add JSON schema validation
-Load more test data from JSON files
-Attach report screenshots to README
+Add Docker support for test execution
+Add GitHub Actions workflow
+Add Allure reporting
+Add more test data files for different API scenarios
 ```
