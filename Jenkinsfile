@@ -12,6 +12,7 @@ pipeline {
     environment {
         VENV_DIR = ".venv"
         JENKINS_ENV_FILE = ".jenkins-python-env"
+        API_TIMEOUT = "5"
     }
 
     stages {
@@ -73,6 +74,54 @@ pipeline {
                     export PATH="$HOME/.local/bin:$PATH"
                     python3 -m pip install --user --break-system-packages -r requirements.txt || python3 -m pip install --user -r requirements.txt
                 fi
+                '''
+            }
+        }
+
+        stage('Verify API Availability') {
+            steps {
+                sh '''
+                . "./$JENKINS_ENV_FILE"
+
+                if [ "$USE_VENV" = "true" ]; then
+                    . "$VENV_DIR/bin/activate"
+                else
+                    export PATH="$HOME/.local/bin:$PATH"
+                fi
+
+                python3 - <<'PY'
+import os
+import sys
+import urllib.error
+import urllib.request
+
+base_url = os.environ.get("BASE_URL", "http://localhost:8080").rstrip("/")
+health_url = f"{base_url}/actuator/health"
+timeout = int(os.environ.get("API_TIMEOUT", "5"))
+
+print(f"Checking API availability: {health_url}")
+
+try:
+    with urllib.request.urlopen(health_url, timeout=timeout) as response:
+        status_code = response.getcode()
+        body = response.read().decode("utf-8", errors="replace")
+        print(f"API health status code: {status_code}")
+        print(f"API health response: {body}")
+        if status_code >= 400:
+            sys.exit(f"API health check returned HTTP {status_code}")
+except (urllib.error.URLError, TimeoutError, OSError) as error:
+    print("")
+    print("API is not reachable from the Jenkins agent.")
+    print(f"BASE_URL: {base_url}")
+    print(f"Error: {error}")
+    print("")
+    print("Check that:")
+    print("1. The Spring Boot backend is running.")
+    print("2. BASE_URL uses the correct IP address reachable from Jenkins.")
+    print("3. The backend listens on 0.0.0.0, not only localhost.")
+    print("4. Firewall allows inbound traffic on port 8080.")
+    sys.exit(1)
+PY
                 '''
             }
         }

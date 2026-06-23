@@ -239,6 +239,7 @@ Pipeline stages:
 Checkout Code
 Prepare Python Environment
 Install Dependencies
+Verify API Availability
 Run Pytest API Tests and Generate HTML Report
 Publish HTML Report
 ```
@@ -250,6 +251,16 @@ The Jenkins pipeline accepts a `BASE_URL` parameter. Set it to the backend URL y
 ```text
 http://localhost:8080
 ```
+
+If Jenkins runs on a different machine, VM, container, or WSL environment, `localhost` means the Jenkins environment itself. Use an IP address or hostname that Jenkins can reach.
+
+Before running tests, the pipeline checks:
+
+```text
+BASE_URL/actuator/health
+```
+
+If this check times out, make sure the backend is running, listening on `0.0.0.0`, and that the firewall allows port `8080`.
 
 Required Jenkins plugin:
 
