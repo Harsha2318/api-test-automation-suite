@@ -2,6 +2,9 @@
 
 A Python-based REST API automation suite for testing a Spring Boot Polling Application backend.
 
+<img width="1620" height="533" alt="image" src="https://github.com/user-attachments/assets/41d542b6-4636-4732-9a80-c730ce123799" />
+
+
 The project uses `pytest` and the `requests` library to validate API health, poll creation, poll retrieval, voting, and negative request scenarios. It also generates an HTML report and includes a Jenkins pipeline for CI execution.
 
 ## Features
