@@ -46,7 +46,7 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 sh '''
-                . "$JENKINS_ENV_FILE"
+                . "./$JENKINS_ENV_FILE"
 
                 if [ "$USE_VENV" = "true" ]; then
                     . "$VENV_DIR/bin/activate"
@@ -69,7 +69,7 @@ pipeline {
             steps {
                 catchError(buildResult: 'FAILURE', stageResult: 'FAILURE') {
                     sh '''
-                    . "$JENKINS_ENV_FILE"
+                    . "./$JENKINS_ENV_FILE"
 
                     if [ "$USE_VENV" = "true" ]; then
                         . "$VENV_DIR/bin/activate"
