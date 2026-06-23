@@ -243,7 +243,7 @@ Run Pytest API Tests and Generate HTML Report
 Publish HTML Report
 ```
 
-The pipeline first tries to create a Python virtual environment. If `python3-venv` is not available on the Jenkins agent, it falls back to user-level pip installation.
+The pipeline first tries to create a Python virtual environment. If `python3-venv` is not available on the Jenkins agent, it falls back to user-level pip installation. If `pip` is also missing, the pipeline attempts to bootstrap pip for the Jenkins user using `get-pip.py`.
 
 The Jenkins pipeline accepts a `BASE_URL` parameter. Set it to the backend URL you want to test:
 

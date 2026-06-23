@@ -55,11 +55,23 @@ pipeline {
                 else
                     if ! python3 -m pip --version; then
                         echo "python3-pip is missing on the Jenkins agent."
-                        echo "Install it once with: sudo apt install python3-pip python3-venv -y"
-                        exit 1
+                        echo "Bootstrapping pip for the Jenkins user."
+
+                        if command -v curl >/dev/null 2>&1; then
+                            curl -sS https://bootstrap.pypa.io/get-pip.py -o get-pip.py
+                        elif command -v wget >/dev/null 2>&1; then
+                            wget -q https://bootstrap.pypa.io/get-pip.py -O get-pip.py
+                        else
+                            echo "Neither curl nor wget is available."
+                            echo "Install Python tooling once with: sudo apt install python3-pip python3-venv curl -y"
+                            exit 1
+                        fi
+
+                        python3 get-pip.py --user --break-system-packages || python3 get-pip.py --user
                     fi
 
-                    python3 -m pip install --user --break-system-packages -r requirements.txt
+                    export PATH="$HOME/.local/bin:$PATH"
+                    python3 -m pip install --user --break-system-packages -r requirements.txt || python3 -m pip install --user -r requirements.txt
                 fi
                 '''
             }
@@ -75,6 +87,7 @@ pipeline {
                         . "$VENV_DIR/bin/activate"
                         pytest --html=reports/api_test_report.html --self-contained-html
                     else
+                        export PATH="$HOME/.local/bin:$PATH"
                         python3 -m pytest --html=reports/api_test_report.html --self-contained-html
                     fi
                     '''
